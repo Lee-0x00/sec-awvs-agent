@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^wvs_scan_pause/', views.wvs_scan_pause,name='wvs_scan_pause'),
     url(r'^wvs_scan_resume/', views.wvs_scan_resume,name='wvs_scan_resume'),
     url(r'^wvs_scan_del/', views.wvs_scan_del,name='wvs_scan_del'),
-#     url(r'^add_task/', views.index,name='add'),
+    url(r'^big_file_download/', views.big_file_download,name='big_file_download'),
 #     url(r'^add_task/', views.index,name='add'),
 #     url(r'^add_task/', views.index,name='add'),
 ]

@@ -180,7 +180,7 @@ class AWVSTask:
                 download_contents = resp.read()
                 #print download_contents
                 #return {"status":1,"data":download_contents}
-                save_file = self.download(path_file="m:\\{0}.zip".format(str(path_file)),data=download_contents)
+                save_file = self.download(path_file="D:\\awvs\\{0}.zip".format(str(path_file)),data=download_contents)
                 if save_file['status'] == 1:
                     return {"status":1,"data":"{0}.zip".format(str(path_file))}
                 else:

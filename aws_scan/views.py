@@ -3,6 +3,7 @@
 #email:amazing_bing@outlook.com
 
 from django.shortcuts import render_to_response,HttpResponse,HttpResponseRedirect,Http404
+from django.http import StreamingHttpResponse
 from django.http import JsonResponse
 from aws_scan.models import AWVSTask
 
@@ -28,11 +29,13 @@ def wvs_scan_list(request):
 def wvs_scan_add(request):
     #taskid = str(request.GET.get('taskid',""))
     domain = request.GET.get('domain',"")
+    scantype = request.GET.get('scantype',0)
+    cookies =  request.GET.get('cookie',"<none>")
     
     if domain != "" and domain.startswith("http://",0,8) or domain.startswith("https://",0,8):
         task = AWVSTask()
         #result = task.awvs_add_mod(domain,scantype=0,cookies="<none>")
-        result = task.awvs_add_mod(domain)
+        result = task.awvs_add_mod(domain,scantype,cookies)
         
         status = result["status"]
         #print result
@@ -111,5 +114,22 @@ def wvs_scan_del(request):
         return JsonResponse({"status": 2,"data":[{"msg":"please,no parameter or  format is error!"}]})
     
 
+
+def big_file_download(request):
+    path_file = request.GET.get('path_file',"")
+    if id != "":
+        code = ""
+        with open("D:\\awvs\\{0}".format(str(path_file)),"rb") as f:
+            code = f.read()
+
+        the_file_name = "{0}".format(str(path_file))
+        #print "D:\\awvs\\{0}".format(str(path_file))
+        response = StreamingHttpResponse(code)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+
+        return response
+    else:
+        return JsonResponse({"status": 2, "data": [{"msg": "please,no parameter or  format is error!"}]})
 
 
