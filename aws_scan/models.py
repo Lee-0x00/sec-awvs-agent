@@ -5,6 +5,8 @@
 import httplib,json,urllib2
 from datetime import datetime
 from time import gmtime, strftime
+import os,sys
+import zipfile
 
 class AWVSTask:
     def __init__(self):
@@ -54,7 +56,7 @@ class AWVSTask:
                    "dayOfMonth":"1",
                    "time": "%s:%s" % (datetime.now().hour, datetime.now().minute+2),
                    "deleteAfterCompletion":"False",
-                   "params":{"profile":str(scan_type[scantype]),
+                   "params":{"profile":str(scan_type[int(scantype)]),
                              "loginSeq":str(cookies),
                              "settings":"Default",
                              "scanningmode":"heuristic",
@@ -144,29 +146,10 @@ class AWVSTask:
             return {"status":0}
 
 
-    def awvs_getresult_mod(self,id,path_file):
-        # conn = httplib.HTTPConnection(self.api_url, self.api_port)
-        # data = json.dumps({"id":str(id)})
-        # conn.request("POST", "/api/getScanResults", data , self.api_header)
-        # # conn.request("GET", "/api/listScans", headers=ACUHEADERS)
-        # resp = conn.getresponse()
-        # content = resp.read()
-        
-        # status = resp.status
-        # if status == 200 and "OK" in content :
-        #     #{"result":"OK","data":[{"id":"2d1484299b7fc582b54ff75c3b0b33dd","date":"周三 29 三月 2017, 13:39:36","size":"195.75 KB"}]}
-        #     reportid = eval(content)["data"][0]["id"]
-        #     conn.request("GET", "/api/download/{0}:{1}".format(id, reportid), headers=self.api_header)
-        #     resp = conn.getresponse()
-        #     report_contents = resp.read()
-        #     print report_contents
-        #     return 1
-        # else:
-        #     return 0
+    def awvs_getresult_mod(self,id,file_name,dirname="D:\\awvs\\"):
         conn = httplib.HTTPConnection(self.api_url, self.api_port)
         data = json.dumps({"id":str(id)})
         conn.request("POST", "/api/getScanResults", data , self.api_header)
-        # conn.request("GET", "/api/listScans", headers=ACUHEADERS)
         resp = conn.getresponse()
         content = resp.read()
 
@@ -180,9 +163,15 @@ class AWVSTask:
                 download_contents = resp.read()
                 #print download_contents
                 #return {"status":1,"data":download_contents}
-                save_file = self.download(path_file="D:\\awvs\\{0}.zip".format(str(path_file)),data=download_contents)
+                save_file = self.download(path_file="{0}{1}.zip".format(str(dirname),str(file_name)),data=download_contents)
                 if save_file['status'] == 1:
-                    return {"status":1,"data":"{0}.zip".format(str(path_file))}
+                    zipfilename = "{0}{1}.zip".format(str(dirname),str(file_name))
+                    #print zipfilename
+                    pdf_filename = self.unzip_dir(file_name = str(file_name),zipfilename= zipfilename)
+                    #print pdf_filename
+                    if pdf_filename["status"] == 1:
+                        os.remove(zipfilename)
+                        return {"status":1,"data":pdf_filename["data"]}
                 else:
                     return {"status":2}
             except:
@@ -219,3 +208,29 @@ class AWVSTask:
             return {"status":1,"data":path_file}
         except:
             return {"status":0}
+
+    def unzip_dir(self,file_name = "test",zipfilename="m:\\scan02.zip", unzipdirname="D:\\awvs\\"):
+        fullzipfilename = os.path.abspath(zipfilename)  
+        fullunzipdirname = os.path.abspath(unzipdirname)  
+        #if not os.path.exists(fullzipfilename): 
+        #print file_name,fullzipfilename
+
+        #Start extract files ...
+        result = ""
+        try:
+            srcZip = zipfile.ZipFile(fullzipfilename, "r")
+            for eachfile in srcZip.namelist():
+                #print "Unzip file %s ..." % eachfile
+                eachfilename = os.path.normpath(os.path.join(fullunzipdirname, '{0}_{1}'.format(file_name,eachfile)))
+                eachdirname = os.path.dirname(eachfilename)
+                if eachfile.endswith(".pdf",4):
+                    fd=open(eachfilename, "wb")
+                    result = eachfilename
+                    fd.write(srcZip.read(eachfile))
+                    fd.close()
+                else:
+                    pass
+            srcZip.close()
+            return {"status":1,"data":result}
+        except:
+          return {"status":0}
