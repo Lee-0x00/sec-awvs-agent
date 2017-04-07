@@ -4,14 +4,47 @@
 
 from flask import Flask,request,redirect, url_for, render_template
 from models import AWVSTask
-import json
+import json,os
 
 
 app = Flask(__name__)
 
 
-
 node_key = "wetk2i97ssd23kjsdhu223fdv234"
+
+#允许访问ip地址
+allowip = ['*','x.x.x.1']
+
+def blocks(func):
+    def decorator(self,*args,**kwargs):
+        remote_ip = self.request.remote_ip
+        if str(remote_ip) in allowip:
+            return func(self,*args, **kwargs)
+        else:
+            raise HTTPError(403)
+    return decorator
+
+
+UPLOAD_FOLDER = 'm:\\'
+ALLOWED_EXTENSIONS = set(['lsr'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/upfile', methods = ['GET','POST'])
+def upload_file():
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename) and ".." not in (file.filename):
+			filename = file.filename
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			return json.dumps({"status":1})
+			#redirect(url_for('upload_file', filename = filename))
+		else:
+			return json.dumps({"status":0})
+	else:
+		return json.dumps({"status":0})
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -125,6 +158,8 @@ def loginseq():
 		return json.dumps(result)
 	else:
 		return json.dumps(result)
+
+
 
 
 if __name__ == '__main__':
