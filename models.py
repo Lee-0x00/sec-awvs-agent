@@ -1,4 +1,4 @@
-#-*- coding: UTF-8 -*- 
+#-*- coding: UTF-8 -*-
 #__author__:Bing
 #email:amazing_bing@outlook.com
 
@@ -12,8 +12,8 @@ import zipfile
 import cgi  
 
 
-report_save_dir = "m:\\"
-loginseq_dir = "C:\Users\Public\Documents\Acunetix WVS 10\LoginSequences"
+report_save_dir = "D:\\scan_agent\\"
+loginseq_dir = "C:\\Users\\Public\\Documents\\Acunetix WVS 10\\LoginSequences"
 
 #判断是否为域名
 def is_domain(domain):
@@ -37,7 +37,7 @@ class AWVSTask:
                             "RequestValidated": "true"
                         }
         self.filter = {
-                            "color_white_list": ["orange", "red"],  # green,blue,orange,red四种级别
+                            "color_white_list": ["orange", "red", "blue"],  # green,blue,orange,red四种级别
                             "bug_black_list": [                     # 漏洞黑名单，过滤掉一些危害等级高，但没什么卵用的洞
                                 "User credentials are sent in clear text"
                             ]
@@ -46,32 +46,30 @@ class AWVSTask:
     def parse_xml(self,file_name):
         bug_list = []
 
-        try:
-            root = minidom.parse(file_name).documentElement
-            #print dir(root),"**********"
-            #print root.nodeName,root.nodeValue,root.nodeType
-            ReportItem_list =  root.getElementsByTagName('ReportItem')
-            #print root.getElementsByTagName('ScanTime')[0].firstChild.data.encode('utf-8')
-            if ReportItem_list:
-                for node in ReportItem_list:
-                    color = node.getAttribute("color")
-                    name = node.getElementsByTagName("Name")[0].firstChild.data.encode('utf-8')
-                    #print color,name
+        root = minidom.parse(file_name).documentElement
+        #print root.nodeName,root.nodeValue,root.nodeType
+        ReportItem_list =  root.getElementsByTagName('ReportItem')
+        #print root.getElementsByTagName('ScanTime')[0].firstChild.data.encode('utf-8')
+        if ReportItem_list:
+            for node in ReportItem_list:
+                color = node.getAttribute("color")
+                name = node.getElementsByTagName("Name")[0].firstChild.data.encode('utf-8')
+                #print color,name
+                try:
                     if color in self.filter['color_white_list'] and name not in self.filter['bug_black_list']:
                         temp = {}
-                        temp['name'] = name
-                        temp['color'] = color.encode('utf-8')
-                        temp['details'] = cgi.escape(node.getElementsByTagName("Details")[0].firstChild.data.encode('utf-8'))
-                        temp['affect'] = cgi.escape(node.getElementsByTagName("Affects")[0].firstChild.data.encode('utf-8'))
-                        temp['severity'] = cgi.escape(node.getElementsByTagName("Severity")[0].firstChild.data.encode('utf-8'))
-                        temp['request'] = cgi.escape(node.getElementsByTagName("Request")[0].firstChild.data.encode('utf-8'))
-                        temp['response'] = cgi.escape(node.getElementsByTagName("Response")[0].firstChild.data.encode('utf-8'))
+                        temp['name'] = '{0}'.format(name)
+                        temp['color'] = '{0}'.format(color.encode('utf-8'))
+                        temp['details'] = '{0}'.format(cgi.escape(node.getElementsByTagName("Details")[0].firstChild.data.encode('utf-8')))
+                        temp['affect'] = '{0}'.format(cgi.escape(node.getElementsByTagName("Affects")[0].firstChild.data.encode('utf-8')))
+                        temp['severity'] = '{0}'.format(cgi.escape(node.getElementsByTagName("Severity")[0].firstChild.data.encode('utf-8')))
+                        temp['request'] = '{0}'.format(cgi.escape(node.getElementsByTagName("Request")[0].firstChild.data.encode('utf-8')))
+                        temp['response'] = '{0}'.format(cgi.escape(node.getElementsByTagName("Response")[0].firstChild.data.encode('utf-8')))
                         temp['repair'] = ""
-                        #new_cont = cgi.escape(uChar) 
-                        #print bug_list,temp
+
                         bug_list.append(temp)
-        except Exception, e:
-            return {"status":0}
+                except Exception, e:
+                    pass
 
         result = {"status":1,"data":bug_list}
         return result
@@ -102,7 +100,7 @@ class AWVSTask:
 
 
 
-    def awvs_add(self,profile,loginSeq,target):
+    def awvs_add(self,profile="",loginSeq="",target=""):
         scan_type = ["Default","Sql_Injection","XSS"]
         try:
             ACUDATA = {"scanType":"scan",
@@ -156,9 +154,12 @@ class AWVSTask:
         #请求下载报告
         result = json.loads(content)
         status = result["result"].encode("gbk")
-        result_len = len(result["data"][0])
+        try:
+            result_len = len(result["data"][0])
+        except:
+            result_len = 2
 
-        print result_len,result["data"]
+        #print result_len,result["data"]
         if status == "OK" and result_len == 3:
             #print "te"
             try:
@@ -177,14 +178,16 @@ class AWVSTask:
                 download_file = self.download(path_file=zipfilename,data=download_contents)
                 if download_file['status'] == 1:
                     xml_filename = self.unzip_dir(unzipfilename=zipfilename,savexmlfile=xmlfilename)
+                    #print xml_filename
                     if xml_filename["status"] == 1:
                         os.remove(zipfilename)
                         xml_data = self.parse_xml(xml_filename["data"])
+                        #print xml_data
                         if xml_data['status'] == 1:
                             os.remove(xmlfilename)
-                            #print xml_data
-                            #new_cont = cgi.escape(uChar) 
                             return {"status":1,"data":xml_data["data"]}
+                        else:
+                            return {"status": 2}
                 else:
                     return {"status":2}
             except:
@@ -264,9 +267,9 @@ class AWVSTask:
 
 
 # AWVSTask().awvs_add(1,"test.lsr","http://www.wakeuppeople.top")
-#print AWVSTask().awvs_report(5)
+#print AWVSTask().awvs_report(2)
 #AWVSTask().unzip_dir(unzipfilename="M:\\0.zip")
-#AWVSTask().parse_xml("M:\\5.xml")
+#print AWVSTask().parse_xml("D:\\scan_agent\\20170412-115740.xml")
 #print AWVSTask().awvs_list_loginseq()
 
 # import HTMLParser  

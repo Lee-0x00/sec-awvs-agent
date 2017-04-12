@@ -1,4 +1,4 @@
-#-*- coding: UTF-8 -*- 
+#-*- coding: UTF-8 -*-
 #__author__:Bing
 #email:amazing_bing@outlook.com
 
@@ -14,13 +14,14 @@ app = Flask(__name__)
 node_key = "wetk2i97ssd23kjsdhu223fdv234"
 
 #允许访问ip地址
-allowip = ['localhost','127.0.0.1']
+allowip = ['localhost','127.0.0.1','210.12.48.132']
 
 def blocks(func):
 	@wraps(func)
 	def decorator(*args, **kwargs):
 		remote_ip = request.remote_addr
-		print remote_ip,"***********"
+		#return func(*args, **kwargs)
+		#print remote_ip,"***********"
 		if str(remote_ip) in allowip:
 			return func(*args, **kwargs)
 		else:
@@ -28,7 +29,7 @@ def blocks(func):
 	return decorator
 
 
-UPLOAD_FOLDER = 'm:\\'
+UPLOAD_FOLDER = 'C:\\Users\\Public\\Documents\\Acunetix WVS 10\\LoginSequences'
 ALLOWED_EXTENSIONS = set(['lsr'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -75,7 +76,7 @@ def add():
 		loginseq = request.form.get('loginseq').encode("gbk")
 		target = request.form.get('target').encode("gbk")
 		#print type(vultype),type(loginseq)
-		if target != "" and target.startswith("http://",0,8)  or target.startswith("https://",0,8) and vultype != type(1) and loginseq != "" :
+		if target != "" and target.startswith("http://",0,8)  or target.startswith("https://",0,8) and vultype != "":
 			#多个任务，进行分割
 			data = []
 			if "," in target :
@@ -86,11 +87,12 @@ def add():
 					return json.dumps(result)
 
 				for line in content:
-					result = AWVSTask().awvs_add(vultype,loginseq,line)
-					if result["status"] != 1:
-						break
+					result = AWVSTask().awvs_add(profile=vultype,loginSeq= "<none>",target=line)
+					if result["status"] == 1:
+						res = {"id":result["data"],"target":line,"status":result["status"]}
+						data.append(res)
 					else:
-						res = {"id":result["data"],"targte":line,"status":result["status"]}
+						res = {"target":line,"status":0}
 						data.append(res)
 			else:
 				try:
@@ -100,12 +102,14 @@ def add():
 					return json.dumps(result)
 
 				for line in content:
-					result = AWVSTask().awvs_add(vultype,loginseq,line)
-					if result["status"] != 1:
-						break
-					else:
-						res = {"id":result["data"],"targte":line,"status":result["status"]}
+					result = AWVSTask().awvs_add(profile=vultype,loginSeq= "<none>",target=line)
+					if result["status"] == 1:
+						res = {"id":result["data"],"target":line,"status":result["status"]}
 						data.append(res)
+					else:
+						res = {"target":line,"status":0}
+						data.append(res)
+
 
 			result = {"status":1,"data":data}
 			return json.dumps(result)
@@ -179,7 +183,7 @@ def loginseq():
 
 if __name__ == '__main__':
 	#app.run(port=8080,debug=False)
-	app.run(debug=True)
+	app.run(host= "0.0.0.0",port = 8080,debug=True)
 
 
 
