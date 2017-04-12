@@ -3,22 +3,16 @@ call awvs http api interface to add scan task
 ---
 
 ## Introduce
-web.py:flask web api    
-models.py:control data operation     
+Web.py:flask web api    
+Models.py:control data operation     
 
----
-Interface information
-|--API_URL--|Parmerter|Return
-:---:|:----:|:----:
-index|null|```{"status":1,"data":task_count}``
-add|vultype,loginseq,target|
-report|taskid|```{"status":1,"data":taskid}```        
+Interface information:      
 
 |API_URL         | Parmerter           | Return  |
 | ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | ```{"status":1,"data":data}   data= [{"id":taskid,"target":domain,"status":status}]``` |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| index     | null | ```{"status":1,"data":task_count}`` |
+| add     | vultype,loginseq,target | ```{"status":1,"data":data}   data= [{"id":taskid,"target":domain,"status":status}]``` |
+| report | taskid | ```{"status":1,"data":taskid}``` |
 
 ---
 ## Usage
@@ -30,4 +24,9 @@ after then:
 ```
 python web.py 
 ```
+
+## Issue
+if you have what do you need to ask me,you can give me leave a message.     
+or if you have any questions,tell me by message.   
+
 
