@@ -6,7 +6,7 @@ web.py:flask web api
 models.py:control data operation
 
 Interface information
-API_URL|Parmerter|Return
+|--API_URL--|Parmerter|Return
 :---:|:----:|:----:
 index|null|```{"status":1,"data":task_count}``
 add|vultype,loginseq,target|```{"status":1,"data":data}   data= [{"id":taskid,"target":domain,"status":status}]```
