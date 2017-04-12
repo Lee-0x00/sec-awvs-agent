@@ -14,7 +14,9 @@ Interface information:
 | index     | null | ```{"status":1,"data":task_count}`` |
 | add     | vultype,loginseq,target | ```{"status":1,"data":data}   data= [{"id":taskid,"target":domain,"status":status}]``` |
 | report | taskid | ```{"status":1,"data":taskid}``` |
-
+| del | taskid | ```{"status":1}``` |
+| process | process | ```{"status":1,"data":process}``` |
+| loginseq | null | ```{"status":1,"data":[loginseq]}``` |
 
 ## Usage   
 ---
