@@ -12,7 +12,7 @@ import zipfile
 import cgi  
 
 
-report_save_dir = "D:\\scan_agent\\"
+report_save_dir = "m:\\test\\"
 loginseq_dir = "C:\\Users\\Public\\Documents\\Acunetix WVS 10\\LoginSequences"
 
 #判断是否为域名

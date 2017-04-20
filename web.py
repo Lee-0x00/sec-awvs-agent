@@ -14,7 +14,7 @@ app = Flask(__name__)
 node_key = "wetk2i97ssd23kjsdhu223fdv234"
 
 #允许访问ip地址
-allowip = ['localhost','127.0.0.1','210.12.48.132']
+allowip = ['localhost','127.0.0.1']
 
 def blocks(func):
 	@wraps(func)
@@ -23,9 +23,10 @@ def blocks(func):
 		#return func(*args, **kwargs)
 		#print remote_ip,"***********"
 		if str(remote_ip) in allowip:
+			#print str(remote_ip),allowip
 			return func(*args, **kwargs)
 		else:
-			return json.dumps({"status":0})
+			return json.dumps({"status":0,"data":"record your attack on IP!"})
 	return decorator
 
 
@@ -183,7 +184,7 @@ def loginseq():
 
 if __name__ == '__main__':
 	#app.run(port=8080,debug=False)
-	app.run(host= "0.0.0.0",port = 8080,debug=True)
+	app.run(host= "0.0.0.0",port = 8080,debug=False)
 
 
 
