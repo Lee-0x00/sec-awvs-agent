@@ -29,11 +29,11 @@ after then:
 python web.py 
 ```
 
-![awvs_agent](https://github.com/Canbing007/awvs_agent/blob/master/screen/1.png)
-![awvs_agent](https://github.com/Canbing007/awvs_agent/blob/master/screen/2.png)
-![awvs_agent](https://github.com/Canbing007/awvs_agent/blob/master/screen/3.png)
-![awvs_agent](https://github.com/Canbing007/awvs_agent/blob/master/screen/4.png)
-![awvs_agent](https://github.com/Canbing007/awvs_agent/blob/master/screen/5.png)
+![awvs_agent](https://raw.githubusercontent.com/Canbing007/awvs_agent/master/screen/1.png)
+![awvs_agent](https://raw.githubusercontent.com/Canbing007/awvs_agent/master/screen/2.png)
+![awvs_agent](https://raw.githubusercontent.com/Canbing007/awvs_agent/master/screen/3.png)
+![awvs_agent](https://raw.githubusercontent.com/Canbing007/awvs_agent/master/screen/4.png)
+![awvs_agent](https://raw.githubusercontent.com/Canbing007/awvs_agent/master/screen/5.png)
 
 ## Issue
 if you have what do you need to ask me,you can give me leave a message.     
